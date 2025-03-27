@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <!-- 响应式视口设置，确保在各种设备上良好显示【参考：&#8203;:contentReference[oaicite:0]{index=0}】 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jensen和Alice的备忘录</title>
+  <!-- 使用 Google Fonts 的像素风英文字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    /* 引入本地中文像素风字体，请将字体文件放在项目根目录 */
+    @font-face {
+      font-family: 'ChinesePixelFont';
+      src: url('ChinesePixelFont.woff2') format('woff2'),
+           url('ChinesePixelFont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    /* 重置样式 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      /* 英文使用 'Press Start 2P'，中文使用本地中文像素风字体 */
+      font-family: 'Press Start 2P', 'ChinesePixelFont', sans-serif;
+      /* 禁用字体平滑，增强像素风效果【参考：&#8203;:contentReference[oaicite:1]{index=1}】 */
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      background: #f0f0f0;
+      overflow: hidden;
+    }
+    /* 外层容器：使用本地背景图片 */
+    .chat-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: url('background.png') center center/cover no-repeat; /* 替换为你的背景图片 */
+    }
+    /* 顶部固定标题栏 */
+    .chat-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      background: rgba(167, 247, 247, 0.6);
+      border-bottom: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      letter-spacing: 1px;
+      z-index: 10;
+    }
+    /* 聊天消息区域，预留顶部标题栏和底部输入区 */
+    .chat-container {
+      position: absolute;
+      top: 50px;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      overflow-y: auto;
+      padding: 20px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(5px);
+    }
+    /* 每条消息整体容器 */
+    .chat-item {
+      display: flex;
+      margin: 10px 0;
+      align-items: flex-start;
+    }
+    /* 用户A：头像在左 */
+    .chat-item.userA { flex-direction: row; }
+    /* 用户B：头像在右 */
+    .chat-item.userB { flex-direction: row-reverse; }
+    /* 头像样式（本地图片） */
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #000;
+      margin: 0 10px;
+      flex-shrink: 0;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+    /* 聊天气泡样式 */
+    .chat-bubble {
+      max-width: 75%;
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 3px 3px 0 #000;
+      image-rendering: pixelated;
+      animation: fadeIn 0.3s ease;
+      position: relative;
+    }
+    /* 用户B的消息采用不同背景色 */
+    .chat-item.userB .chat-bubble {
+      background: #dcf8c6;
+    }
+    /* 发送者名称 */
+    .sender-name {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    /* 消息文本 */
+    .message-text {
+      font-size: 14px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+    /* 消息日期 */
+    .message-time {
+      font-size: 10px;
+      color: #555;
+      text-align: right;
+      margin-top: 4px;
+    }
+    /* 淡入动画 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* 底部输入区域 */
+    .chat-input {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      border-top: 2px solid #000;
+    }
+    .sender-toggle {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+      font-size: 12px;
+    }
+    .sender-toggle label {
+      margin-right: 5px;
+      cursor: pointer;
+    }
+    .sender-toggle input[type="radio"] {
+      margin-right: 5px;
+    }
+    .chat-input input[type="text"] {
+      flex: 1;
+      height: 40px;
+      padding: 0 10px;
+      border: 2px solid #000;
+      border-radius: 5px;
+      font-size: 12px;
+      image-rendering: pixelated;
+      background: #fff;
+    }
+    .chat-input button {
+      margin-left: 10px;
+      height: 40px;
+      padding: 0 15px;
+      border: 2px solid #000;
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      image-rendering: pixelated;
+    }
+    /* 上传图片按钮样式 */
+    .chat-input #uploadImgBtn {
+      margin-left: 10px;
+    }
+    /* 类型机效果 */
+    .typewriter {
+      overflow: hidden;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    /* 图片消息样式 */
+    .message-image {
+      max-width: 100%;
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-wrapper">
+    <!-- 顶部标题栏 -->
+    <div class="chat-header">
+      像素风聊天记录
+    </div>
+    <!-- 消息展示区域 -->
+    <div class="chat-container" id="chatContainer">
+      <!-- 预设消息 -->
+      <div class="chat-item userA">
+        <div class="avatar">
+          <img src="Jensen.png" alt="用户A头像">
+        </div>
+        <div class="chat-bubble">
+          <div class="sender-name">Jensen</div>
+          <div class="message-text">你好，我们可以把对对方的真诚建议和想法写在这里备忘，来促进我们的沟通，性格和生活习惯吧的融洽！</div>
+          <div class="message-time">2025-03-28</div>
+        </div>
+      </div>
+      <div class="chat-item userB">
+        <div class="avatar">
+          <img src="Alice.png" alt="用户B头像">
+        </div>
+        <div class="chat-bubble">
+          <div class="sender-name">Alice</div>
+          <div class="message-text">你好！希望你不要介意我写在这里的建议和想法，我都是为了我们更好的沟通和相处！</div>
+          <div class="message-time">2025-03-28</div>
+        </div>
+      </div>
+      <div class="chat-item userA">
+        <div class="avatar">
+          <img src="Jensen.png" alt="用户A头像">
+        </div>
+        <div class="chat-bubble">
+          <div class="sender-name">Jensen</div>
+          <div class="message-text">希望你不要总是推开我，我需要你的拥抱。我会尽量控制自己的情绪，不要总是让你感到不舒服。最近在想办法抵抗焦虑，缓解负面情绪了</div>
+          <div class="message-time">2025-03-28</div>
+        </div>
+      </div>
+      <div class="chat-item userB">
+        <div class="avatar">
+          <img src="Alice.png" alt="用户B头像">
+        </div>
+        <div class="chat-bubble">
+          <div class="sender-name">Alice</div>
+          <div class="message-text">最近提出很多建议像让你改进，希望你不要介意，我都是为了我们更好的沟通和相处！不要说一些不过脑子让人生气的话，我需要你的关心和理解！</div>
+          <div class="message-time">2025-03-28</div>
+        </div>
+      </div>
+      <!-- 最后一条消息：类型机效果 -->
+      <div class="chat-item userB">
+        <div class="avatar">
+          <img src="Alice.png" alt="用户B头像">
+        </div>
+        <div class="chat-bubble">
+          <div class="sender-name">Alice</div>
+          <div class="message-text typewriter" id="typewriterMsg">我还有一些想和你说的……</div>
+          <div class="message-time" id="typewriterDate">2025-03-28</div>
+        </div>
+      </div>
+    </div>
+    <!-- 底部输入区域 -->
+    <div class="chat-input">
+      <div class="sender-toggle">
+        <label for="senderA">
+          <input type="radio" name="sender" id="senderA" value="userA" checked> Jensen
+        </label>
+        <label for="senderB">
+          <input type="radio" name="sender" id="senderB" value="userB"> Alice
+        </label>
+      </div>
+      <input type="text" id="messageInput" placeholder="输入消息...">
+      <button id="sendBtn">发送</button>
+      <button id="uploadImgBtn">上传图片</button>
+      <!-- 隐藏的图片上传 input -->
+      <input type="file" id="imageInput" accept="image/*" style="display:none;">
+    </div>
+  </div>
+  <script>
+    // 获取当前日期（格式 YYYY-MM-DD）
+    function getCurrentDate() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      return year + '-' + month + '-' + day;
+    }
+    
+    // 添加文本消息
+    function addChatMessage(sender, text) {
+      const chatContainer = document.getElementById('chatContainer');
+      const chatItem = document.createElement('div');
+      chatItem.className = 'chat-item ' + sender;
+      
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className = 'avatar';
+      const avatarImg = document.createElement('img');
+      avatarImg.src = sender === 'userA' ? 'Jensen.png' : 'Alice.png';
+      avatarImg.alt = sender === 'userA' ? '用户A头像' : '用户B头像';
+      avatarDiv.appendChild(avatarImg);
+      
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'chat-bubble';
+      
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'sender-name';
+      nameDiv.textContent = sender === 'userA' ? 'Jensen' : 'Alice';
+      
+      const textDiv = document.createElement('div');
+      textDiv.className = 'message-text';
+      textDiv.textContent = text;
+      
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'message-time';
+      dateDiv.textContent = getCurrentDate();
+      
+      bubbleDiv.appendChild(nameDiv);
+      bubbleDiv.appendChild(textDiv);
+      bubbleDiv.appendChild(dateDiv);
+      
+      chatItem.appendChild(avatarDiv);
+      chatItem.appendChild(bubbleDiv);
+      
+      chatContainer.appendChild(chatItem);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    // 添加图片消息
+    function addChatImageMessage(sender, imageData) {
+      const chatContainer = document.getElementById('chatContainer');
+      const chatItem = document.createElement('div');
+      chatItem.className = 'chat-item ' + sender;
+      
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className = 'avatar';
+      const avatarImg = document.createElement('img');
+      avatarImg.src = sender === 'userA' ? 'Jensen.png' : 'Alice.png';
+      avatarImg.alt = sender === 'userA' ? '用户A头像' : '用户B头像';
+      avatarDiv.appendChild(avatarImg);
+      
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'chat-bubble';
+      
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'sender-name';
+      nameDiv.textContent = sender === 'userA' ? 'Jensen' : 'Alice';
+      
+      // 创建图片消息元素
+      const imageElem = document.createElement('img');
+      imageElem.className = 'message-image';
+      imageElem.src = imageData;
+      
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'message-time';
+      dateDiv.textContent = getCurrentDate();
+      
+      bubbleDiv.appendChild(nameDiv);
+      bubbleDiv.appendChild(imageElem);
+      bubbleDiv.appendChild(dateDiv);
+      
+      chatItem.appendChild(avatarDiv);
+      chatItem.appendChild(bubbleDiv);
+      
+      chatContainer.appendChild(chatItem);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    // 绑定发送按钮事件
+    document.getElementById('sendBtn').addEventListener('click', function() {
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (text !== "") {
+        const sender = document.querySelector('input[name="sender"]:checked').value;
+        addChatMessage(sender, text);
+        input.value = "";
+      }
+    });
+    // 回车发送文本消息
+    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('sendBtn').click();
+      }
+    });
+    
+    // 上传图片按钮：触发隐藏的 file input
+    document.getElementById('uploadImgBtn').addEventListener('click', function() {
+      document.getElementById('imageInput').click();
+    });
+    
+    // 监听图片文件选择
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const sender = document.querySelector('input[name="sender"]:checked').value;
+          addChatImageMessage(sender, evt.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+      // 重置 file input
+      e.target.value = "";
+    });
+    
+    // 类型机效果：逐字显示最后一条消息
+    document.addEventListener('DOMContentLoaded', function() {
+      const typewriterElem = document.getElementById('typewriterMsg');
+      const fullText = typewriterElem.textContent;
+      typewriterElem.textContent = '';
+      let index = 0;
+      const speed = 100;
+      const timer = setInterval(() => {
+        typewriterElem.textContent += fullText.charAt(index);
+        index++;
+        if (index >= fullText.length) {
+          clearInterval(timer);
+        }
+      }, speed);
+    });
+  </script>
+</body>
+</html>
