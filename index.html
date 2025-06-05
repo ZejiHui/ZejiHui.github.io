@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdaMind - 专业AI应用培训</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* 导航栏 - 简洁扁平 */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-img {
+            height: 60px;
+            vertical-align: middle;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: #1a1a1a;
+        }
+
+        /* 主页面 */
+        main {
+            margin-top: 80px;
+        }
+
+        /* 首页横幅 - 极简设计，背景渐变 */
+        .hero {
+            background: linear-gradient(135deg, #fafafa, #ffffff);
+            padding: 120px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 40px;
+            font-weight: 400;
+            max-width: 760px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .cta-button {
+            background: #667eea;
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: #5a6ed0;
+            transform: translateY(-1px);
+        }
+
+        /* 课程部分 - 极简卡片 */
+        .courses {
+            padding: 120px 0;
+            background: #f0f4f8; /* Light blue-gray */
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 64px;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        .page-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 48px 32px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: #e0e0e0;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .card:nth-child(2)::before {
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+        }
+
+        .card:nth-child(3)::before {
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            letter-spacing: -0.3px;
+        }
+
+        .card-copy {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .card-btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .card-btn:hover {
+            background: #5a6ed0;
+            transform: translateY(-1px);
+        }
+
+        /* 团队部分 - 极简设计 */
+        .team {
+            padding: 120px 0;
+            background: #e6f7f7; /* Light teal */
+        }
+
+        .team-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            margin-top: 64px;
+        }
+
+        .member-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .member-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+        }
+
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -1px;
+        }
+
+        .member-card:nth-child(1) .member-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .member-card:nth-child(2) .member-avatar {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+        }
+
+        .member-card:nth-child(3) .member-avatar {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .member-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .member-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .member-description {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 关于我们 - 简洁布局 */
+        .about {
+            padding: 120px 0;
+            background: #f5f3f9; /* Light lavender */
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        .about-text h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .about-text p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .about-image {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 300px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 32px 24px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .feature h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .feature p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* 用户反馈 - 极简卡片 */
+        .testimonials {
+            padding: 120px 0;
+            background: #fff0e6; /* Light peach */
+        }
+
+        .testimonials-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+            margin-top: 64px;
+        }
+
+        .testimonial-card {
+            background: #fafafa;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+        }
+
+        .testimonial-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .author-avatar.business {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .author-avatar.tech {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .author-avatar.creative {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .author-avatar.finance {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+        }
+
+        .author-avatar.education {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+        }
+
+        .author-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+            letter-spacing: -0.2px;
+        }
+
+        .author-info p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        /* 联系我们 - 极简风格 */
+        .contact {
+            padding: 120px 0;
+            background: #f8f9fa; /* Light gray */
+            color: #333; /* Darker text for contrast */
+        }
+
+        .contact .section-title {
+            color: #1a1a1a; /* Darker title for contrast */
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 48px;
+            margin-top: 64px;
+        }
+
+        .contact-item {
+            text-align: center;
+        }
+
+        .contact-item h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a; /* Darker heading for contrast */
+        }
+
+        .contact-item p {
+            font-size: 16px;
+            color: #555; /* Medium-dark gray for contrast */
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+                line-height: 1.2;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .page-content {
+                grid-template-columns: 1fr;
+            }
+
+            .team-container {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 报名表单模态框 - 极简设计 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 48px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .close {
+            color: #999;
+            float: right;
+            font-size: 24px;
+            font-weight: 400;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #1a1a1a;
+        }
+
+        .modal-content h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 32px;
+            letter-spacing: -0.3px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <img src="logo.png" alt="AdaMind Logo" class="logo-img">
+            <ul class="nav-links">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#courses">课程</a></li>
+                <li><a href="#team">团队</a></li>
+                <li><a href="#testimonials">用户反馈</a></li>
+                <li><a href="#contact">联系我们</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h1>AI 取代不了人，但不用 AI 的人将被用 AI 的人取代</h1>
+                <p>在 AdaMind，我们坚信AI的赋能力量。我们提供前沿的AI应用培训，致力于帮助个人与企业驾驭人工智能浪潮，将尖端AI工具无缝融入工作与生活，显著提升效率，释放无限潜能。让人工智能成为您最得力的伙伴，与我们一同塑造未来。</p>
+                <button class="cta-button" onclick="openModal()">立即报名</button>
+            </div>
+        </section>
+
+        <section id="courses" class="courses">
+            <div class="container">
+                <h2 class="section-title">AI应用培训课程</h2>
+                <div class="page-content">
+                    <div class="card">
+                        <div class="content">
+                            <h2 class="card-title">工作效率</h2>
+                            <p class="card-copy">学习使用ChatGPT、Claude等AI工具，自动化文档处理、邮件回复、会议总结，让工作事半功倍</p>
+                            <button class="card-btn" onclick="openModal()">了解详情</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="content">
+                            <h2 class="card-title">生产力</h2>
+                            <p class="card-copy">掌握AI编程助手、设计工具、数据分析，从代码生成到创意设计，全面提升创作能力</p>
+                            <button class="card-btn" onclick="openModal()">了解详情</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="content">
+                            <h2 class="card-title">日常生活</h2>
+                            <p class="card-copy">AI助手帮您规划日程、学习新技能、健康管理，让人工智能融入生活的每一个角落</p>
+                            <button class="card-btn" onclick="openModal()">了解详情</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="team" class="team">
+            <div class="container">
+                <h2 class="section-title">专业团队</h2>
+                <div class="team-container">
+                    <div class="member-card">
+                        <div class="member-avatar">JE</div>
+                        <h3 class="member-name">Jensen</h3>
+                        <p class="member-title">技术总监 • AI专家</p>
+                        <p class="member-description">前Google AI研究员，专注于大语言模型和AI应用架构。拥有丰富的企业AI落地经验，致力于让AI技术普及化。</p>
+                    </div>
+                    <div class="member-card">
+                        <div class="member-avatar">SA</div>
+                        <h3 class="member-name">Sam</h3>
+                        <p class="member-title">产品经理 • AI产品设计师</p>
+                        <p class="member-description">前微软产品经理，AI产品设计专家。擅长将复杂的AI技术转化为用户友好的产品体验，让每个人都能轻松使用AI工具。</p>
+                    </div>
+                    <div class="member-card">
+                        <div class="member-avatar">JA</div>
+                        <h3 class="member-name">Jack</h3>
+                        <p class="member-title">培训总监 • 首席讲师</p>
+                        <p class="member-description">教育学博士，拥有10年教学经验。专注于AI教育方法论研究，开发了独特的"渐进式AI学习法"，帮助学员快速掌握AI应用技能。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text">
+                        <h2>为什么选择AdaMind的AI培训？</h2>
+                        <p>我们专注于实用AI工具教学，拥有资深的AI应用专家团队。已帮助超过500家企业和1000+个人用户掌握AI技能，提升工作效率300%以上。</p>
+                        <p>我们的教学理念是实战为主，从零基础到精通，确保每位学员都能在实际工作中应用AI工具。</p>
+                    </div>
+                    <div class="about-image">
+                        <span>AI培训现场</span>
+                    </div>
+                </div>
+                
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">🤖</div>
+                        <h3>前沿AI工具</h3>
+                        <p>涵盖ChatGPT、Claude、Midjourney等热门AI应用</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">💼</div>
+                        <h3>实战导向</h3>
+                        <p>结合真实工作场景，学完即用</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📈</div>
+                        <h3>效果显著</h3>
+                        <p>平均提升工作效率300%以上</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="testimonials">
+            <div class="container">
+                <h2 class="section-title">用户反馈</h2>
+                <div class="testimonials-container">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            参加AdaMind的AI工作效率课程后，我的日常工作效率提升了至少3倍！现在用ChatGPT处理邮件、文档整理和会议纪要，每天能节省2-3小时。Jensen老师的教学非常实用，学完就能立即应用到工作中。
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar business">LW</div>
+                            <div class="author-info">
+                                <h4>李薇</h4>
+                                <p>产品经理 | 腾讯</p>
+                                <div class="rating">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            作为程序员，我原本对AI工具还有些抵触。但Sam老师的生产力课程让我彻底改变了想法。现在我用GitHub Copilot和Claude辅助编程，代码质量和开发速度都有显著提升。AI真的是开发者的好助手！
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar tech">ZM</div>
+                            <div class="author-info">
+                                <h4>张明</h4>
+                                <p>高级开发工程师 | 字节跳动</p>
+                                <div class="rating">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            Jack老师的日常生活AI应用课程太棒了！现在我用AI规划旅行、管理健康数据、学习新技能。最喜欢的是用AI制定个人学习计划，比以前自己摸索高效多了。生活质量明显提升！
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar creative">WX</div>
+                            <div class="author-info">
+                                <h4>王雪</h4>
+                                <p>UI设计师 | 自由职业</p>
+                                <div class="rating">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            公司组织了AdaMind的企业培训，整个团队的工作流程都得到了优化。数据分析效率提升了400%，报告制作时间从一周缩短到一天。强烈推荐给所有企业！
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar finance">CJ</div>
+                            <div class="author-info">
+                                <h4>陈杰</h4>
+                                <p>数据分析总监 | 美团</p>
+                                <div class="rating">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            作为教育工作者，我一直在寻找提升教学效果的方法。AdaMind的课程让我学会了用AI生成教学材料、个性化学习内容。学生们的学习兴趣和成绩都有很大提升，感谢团队的专业指导！
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar education">LL</div>
+                            <div class="author-info">
+                                <h4>刘莉</h4>
+                                <p>高中数学老师 | 北京四中</p>
+                                <div class="rating">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            创业初期资源有限，AdaMind教我们用AI工具快速验证商业想法、制作原型、分析市场数据。省下了大量外包费用，产品迭代速度也快了很多。这些AI技能对创业者来说太重要了！
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar business">HY</div>
+                            <div class="author-info">
+                                <h4>黄宇</h4>
+                                <p>创始人 | 智能科技有限公司</p>
+                                <div class="rating">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2 class="section-title">联系我们</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h3>📞 咨询电话</h3>
+                        <p>400-123-4567</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>📧 邮箱</h3>
+                        <p>info@adamind.com</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>📍 地址</h3>
+                        <p>Melbourne, VIC, Australia</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 模态框 -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>报名信息</h2>
+                <div class="form-group">
+                    <label for="name">姓名</label>
+                    <input type="text" id="name" placeholder="输入您的姓名">
+                </div>
+                <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" id="email" placeholder="输入您的邮箱">
+                </div>
+                <div class="form-group">
+                    <label for="course">选择课程</label>
+                    <select id="course">
+                        <option value="efficiency">工作效率课程</option>
+                        <option value="productivity">生产力课程</option>
+                        <option value="daily">日常生活AI课程</option>
+                    </select>
+                </div>
+                <button class="cta-button" onclick="submitForm()">提交</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function openModal() {
+            document.getElementById('modal').style.display = 'block';
+        }
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+        function submitForm() {
+            // 简单示例：提交后关闭模态框
+            alert('报名信息已提交，感谢您的关注！');
+            closeModal();
+        }
+        // 点击模态框外部区域关闭模态框
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
+```
